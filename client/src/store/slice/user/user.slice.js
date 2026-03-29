@@ -1,17 +1,31 @@
+/* eslint-disable no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
+import { loginUserThunk } from "./user.thunk.js";
 
 const initialState = {
-  value: 0,
+  isAuthenticated: false,
+  screenLoading: true,
 };
 
-export const counterSlice = createSlice({
-  name: "counter",
+export const userSlice = createSlice({
+  name: "user",
   initialState,
-  reducers: {
-    
+  reducers: {},
+  extraReducers: (builder) => {
+    // login user
+    builder.addCase(loginUserThunk.pending, (state, action) => {
+      state.buttonLoading = true;
+    });
+    builder.addCase(loginUserThunk.fulfilled, (state, action) => {
+      state.userProfile = action.payload?.responseData?.user;
+      state.isAuthenticated = true;
+      state.buttonLoading = false;
+    });
+    builder.addCase(loginUserThunk.rejected, (state, action) => {
+      state.buttonLoading = false;
+    });
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-
-export default counterSlice.reducer;
+export const { logout } = userSlice.actions;
+export default userSlice.reducer;
