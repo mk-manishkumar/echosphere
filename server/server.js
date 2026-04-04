@@ -7,6 +7,7 @@ import cors from "cors";
 import { connectDB } from "./db/connection1.db.js";
 import userRouter from "./routes/user.route.js";
 import { errorMiddleware } from "./middlewares/error.middlware.js";
+import messageRouter from "./routes/message.route.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ const PORT = process.env.PORT || 5000;
 
 // Routes
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/message", messageRouter);
 
 // test route
 app.get("/", (req, res) => {
