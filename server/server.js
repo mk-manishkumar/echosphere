@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
-
+import { app, server } from "./socket/socket.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -8,8 +6,6 @@ import { connectDB } from "./db/connection1.db.js";
 import userRouter from "./routes/user.route.js";
 import { errorMiddleware } from "./middlewares/error.middlware.js";
 import messageRouter from "./routes/message.route.js";
-
-const app = express();
 
 // DB connect
 connectDB();
@@ -33,6 +29,6 @@ app.get("/", (req, res) => {
 // error middleware
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
