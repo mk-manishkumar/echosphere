@@ -1,6 +1,6 @@
 import User from "../models/User.model.js";
 import { errorHandler } from "../utils/errorHandler.utility.js";
-import { asyncHandler } from "../utilities/asyncHandler.utility.js";
+import { asyncHandler } from "../utils/asyncHandler.utility.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 

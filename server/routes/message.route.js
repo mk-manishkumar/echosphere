@@ -4,7 +4,7 @@ import { getMessages, sendMessage } from "../controllers/message.controller.js";
 
 const messageRouter = express.Router();
 
-router.post("/send/:receiverId", isAuthenticated, sendMessage);
-router.get("/get-messages/:otherParticipantId", isAuthenticated, getMessages);
+messageRouter.post("/send/:receiverId", isAuthenticated, sendMessage);
+messageRouter.get("/get-messages/:otherParticipantId", isAuthenticated, getMessages);
 
 export default messageRouter;

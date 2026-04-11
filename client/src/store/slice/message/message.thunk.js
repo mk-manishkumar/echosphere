@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosInstance } from "../../../components/utitlities/axiosInstance";
+import { axiosInstance } from './../../../components/utilities/axiosInstance';
 
 // Send Message
 export const sendMessageThunk = createAsyncThunk("message/send", async ({ receiverId, message }, { rejectWithValue }) => {
