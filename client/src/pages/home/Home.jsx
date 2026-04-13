@@ -2,46 +2,27 @@ import { useEffect } from "react";
 import UserSidebar from "./UserSidebar";
 import MessageContainer from "./MessageContainer";
 import { useDispatch, useSelector } from "react-redux";
-import { setOnlineUsers } from "../../store/slice/socket/socket.slice";
-import { setNewMessage } from "../../store/slice/message/message.slice";
-import { initializeSocketThunk } from "./../../store/slice/socket/socket.thunk";
 
 const Home = () => {
   const dispatch = useDispatch();
 
   const { isAuthenticated, userProfile } = useSelector((state) => state.userReducer);
-  const { socket } = useSelector((state) => state.socketReducer);
 
-  // Initialize socket
+  // Connect/disconnect socket via middleware
   useEffect(() => {
     if (!isAuthenticated || !userProfile?._id) return;
 
-    dispatch(initializeSocketThunk(userProfile._id));
-  }, [isAuthenticated, userProfile?._id, dispatch]);
-
-  // Listen to socket events
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleOnlineUsers = (onlineUsers) => {
-      dispatch(setOnlineUsers(onlineUsers));
-    };
-
-    const handleNewMessage = (newMessage) => {
-      dispatch(setNewMessage(newMessage));
-    };
-
-    socket.on("onlineUsers", handleOnlineUsers);
-    socket.on("newMessage", handleNewMessage);
+    // Tell the middleware to connect
+    dispatch({ type: "socket/connect", payload: userProfile._id });
 
     return () => {
-      socket.off("onlineUsers", handleOnlineUsers);
-      socket.off("newMessage", handleNewMessage);
+      // Tell the middleware to clean up when component unmounts
+      dispatch({ type: "socket/disconnect" });
     };
-  }, [socket, dispatch]);
+  }, [isAuthenticated, userProfile?._id, dispatch]);
 
   return (
-    <div className="flex">
+    <div className="h-screen bg-zinc-950 flex">
       <UserSidebar />
       <MessageContainer />
     </div>

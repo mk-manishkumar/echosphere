@@ -14,8 +14,8 @@ const ProtectedRoute = ({ children }) => {
   // Show loader while checking auth
   if (screenLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="flex justify-center items-center h-screen bg-zinc-950">
+        <div className="spinner"></div>
       </div>
     );
   }

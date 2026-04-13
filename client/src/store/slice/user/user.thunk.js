@@ -37,7 +37,6 @@ export const getUserProfileThunk = createAsyncThunk("user/getProfile", async (_,
     const response = await axiosInstance.get("/user/get-profile");
     return response.data;
   } catch (error) {
-    console.error(error);
     const errorOutput = error?.response?.data?.errMessage || "Failed to fetch profile";
     return rejectWithValue(errorOutput);
   }
