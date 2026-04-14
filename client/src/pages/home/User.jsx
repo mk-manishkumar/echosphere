@@ -31,12 +31,25 @@ const User = ({ userDetails }) => {
       </div>
 
       {/* User info */}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <h2 className={`text-sm font-medium truncate ${isSelected ? "text-indigo-300" : "text-white"}`}>
           {userDetails?.fullName}
         </h2>
         <p className="text-xs text-zinc-500 truncate">@{userDetails?.username}</p>
       </div>
+
+      {/* Gender badge */}
+      {userDetails?.gender && (
+        <span
+          className={`w-7 h-7 shrink-0 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
+            userDetails.gender === "male"
+              ? "border-indigo-500/50 text-indigo-400"
+              : "border-pink-500/50 text-pink-400"
+          }`}
+        >
+          {userDetails.gender === "male" ? "M" : "F"}
+        </span>
+      )}
     </button>
   );
 };
