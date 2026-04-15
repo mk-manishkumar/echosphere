@@ -3,6 +3,7 @@ import Home from "./pages/home/Home.jsx";
 import Login from "./pages/authentication/Login.jsx";
 import Signup from "./pages/authentication/Signup.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import EditProfile from "./pages/profile/EditProfile.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -10,6 +11,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Home />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/edit-profile",
+    element: (
+      <ProtectedRoute>
+        <EditProfile />
       </ProtectedRoute>
     ),
   },

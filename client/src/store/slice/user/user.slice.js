@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getOtherUsersThunk, getUserProfileThunk, loginUserThunk, logoutUserThunk, registerUserThunk } from "./user.thunk";
+import { getOtherUsersThunk, getUserProfileThunk, loginUserThunk, logoutUserThunk, registerUserThunk, checkUsernameAvailabilityThunk, updateProfileThunk, changePasswordThunk, deleteAccountThunk } from "./user.thunk";
 
 const initialState = {
   isAuthenticated: false,
@@ -8,6 +8,7 @@ const initialState = {
   selectedUser: JSON.parse(localStorage.getItem("selectedUser")),
   buttonLoading: false,
   screenLoading: true,
+  usernameAvailable: null,
 };
 
 export const userSlice = createSlice({
@@ -17,6 +18,9 @@ export const userSlice = createSlice({
     setSelectedUser: (state, action) => {
       localStorage.setItem("selectedUser", JSON.stringify(action.payload));
       state.selectedUser = action.payload;
+    },
+    clearUsernameAvailability: (state) => {
+      state.usernameAvailable = null;
     },
   },
   extraReducers: (builder) => {
@@ -79,9 +83,53 @@ export const userSlice = createSlice({
     builder.addCase(getOtherUsersThunk.fulfilled, (state, action) => {
       state.otherUsers = action.payload?.responseData;
     });
+
+    // check username availability
+    builder.addCase(checkUsernameAvailabilityThunk.fulfilled, (state, action) => {
+      state.usernameAvailable = action.payload?.responseData?.available;
+    });
+
+    // update profile
+    builder.addCase(updateProfileThunk.pending, (state) => {
+      state.buttonLoading = true;
+    });
+    builder.addCase(updateProfileThunk.fulfilled, (state, action) => {
+      state.userProfile = action.payload?.responseData;
+      state.buttonLoading = false;
+    });
+    builder.addCase(updateProfileThunk.rejected, (state) => {
+      state.buttonLoading = false;
+    });
+
+    // change password
+    builder.addCase(changePasswordThunk.pending, (state) => {
+      state.buttonLoading = true;
+    });
+    builder.addCase(changePasswordThunk.fulfilled, (state) => {
+      state.buttonLoading = false;
+    });
+    builder.addCase(changePasswordThunk.rejected, (state) => {
+      state.buttonLoading = false;
+    });
+
+    // delete account
+    builder.addCase(deleteAccountThunk.pending, (state) => {
+      state.buttonLoading = true;
+    });
+    builder.addCase(deleteAccountThunk.fulfilled, (state) => {
+      state.userProfile = null;
+      state.selectedUser = null;
+      state.otherUsers = null;
+      state.isAuthenticated = false;
+      state.buttonLoading = false;
+      localStorage.clear();
+    });
+    builder.addCase(deleteAccountThunk.rejected, (state) => {
+      state.buttonLoading = false;
+    });
   },
 });
 
-export const { setSelectedUser } = userSlice.actions;
+export const { setSelectedUser, clearUsernameAvailability } = userSlice.actions;
 
 export default userSlice.reducer;

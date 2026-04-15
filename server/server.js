@@ -6,9 +6,13 @@ import { connectDB } from "./db/connection1.db.js";
 import userRouter from "./routes/user.route.js";
 import { errorMiddleware } from "./middlewares/error.middlware.js";
 import messageRouter from "./routes/message.route.js";
+import scheduleInactivityCleanup from "./cron/inactivityCleanup.cron.js";
 
 // DB connect
 connectDB();
+
+// Schedule inactivity cleanup cron job
+scheduleInactivityCleanup();
 
 // Middlewares
 app.use(cors({ origin: [process.env.CLIENT_URL], credentials: true }));

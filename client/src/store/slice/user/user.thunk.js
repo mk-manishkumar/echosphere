@@ -52,3 +52,55 @@ export const getOtherUsersThunk = createAsyncThunk("user/getOtherUsers", async (
     return rejectWithValue(errorOutput);
   }
 });
+
+export const checkUsernameAvailabilityThunk = createAsyncThunk("user/checkUsername", async (username, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.get("/user/check-username", {
+      params: { username },
+    });
+    return response.data;
+  } catch (error) {
+    const errorOutput = error?.response?.data?.errMessage || "Failed to check username";
+    return rejectWithValue(errorOutput);
+  }
+});
+
+export const updateProfileThunk = createAsyncThunk("user/updateProfile", async ({ fullName, username, gender }, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.put("/user/update-profile", {
+      fullName,
+      username,
+      gender,
+    });
+    return response.data;
+  } catch (error) {
+    const errorOutput = error?.response?.data?.errMessage || "Failed to update profile";
+    return rejectWithValue(errorOutput);
+  }
+});
+
+export const changePasswordThunk = createAsyncThunk("user/changePassword", async ({ oldPassword, newPassword, confirmPassword }, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.put("/user/change-password", {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    });
+    return response.data;
+  } catch (error) {
+    const errorOutput = error?.response?.data?.errMessage || "Failed to change password";
+    return rejectWithValue(errorOutput);
+  }
+});
+
+export const deleteAccountThunk = createAsyncThunk("user/deleteAccount", async (password, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.delete("/user/account", {
+      data: { password },
+    });
+    return response.data;
+  } catch (error) {
+    const errorOutput = error?.response?.data?.errMessage || "Failed to delete account";
+    return rejectWithValue(errorOutput);
+  }
+});

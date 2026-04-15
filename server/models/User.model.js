@@ -23,9 +23,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    last_login_at: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true },
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
