@@ -4,11 +4,14 @@ import { getOtherUsersThunk, getUserProfileThunk, loginUserThunk, logoutUserThun
 const initialState = {
   isAuthenticated: false,
   userProfile: null,
-  otherUsers: null,
+  otherUsers: [],
   selectedUser: JSON.parse(localStorage.getItem("selectedUser")),
   buttonLoading: false,
   screenLoading: true,
   usernameAvailable: null,
+  usersHasMore: true,
+  usersLoading: false,
+  totalUsersCount: 0,
 };
 
 export const userSlice = createSlice({
@@ -57,7 +60,9 @@ export const userSlice = createSlice({
     builder.addCase(logoutUserThunk.fulfilled, (state) => {
       state.userProfile = null;
       state.selectedUser = null;
-      state.otherUsers = null;
+      state.otherUsers = [];
+      state.usersHasMore = true;
+      state.totalUsersCount = 0;
       state.isAuthenticated = false;
       state.buttonLoading = false;
       localStorage.clear();
@@ -80,8 +85,19 @@ export const userSlice = createSlice({
     });
 
     // get other users
+    builder.addCase(getOtherUsersThunk.pending, (state) => {
+      state.usersLoading = true;
+    });
     builder.addCase(getOtherUsersThunk.fulfilled, (state, action) => {
-      state.otherUsers = action.payload?.responseData;
+      const { users = [], totalCount = 0, hasMore = false } = action.payload?.responseData || {};
+      // Append new users to existing list
+      state.otherUsers = [...state.otherUsers, ...users];
+      state.usersHasMore = hasMore;
+      state.totalUsersCount = totalCount;
+      state.usersLoading = false;
+    });
+    builder.addCase(getOtherUsersThunk.rejected, (state) => {
+      state.usersLoading = false;
     });
 
     // check username availability

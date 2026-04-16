@@ -42,9 +42,9 @@ export const getUserProfileThunk = createAsyncThunk("user/getProfile", async (_,
   }
 });
 
-export const getOtherUsersThunk = createAsyncThunk("user/getOtherUsers", async (_, { rejectWithValue }) => {
+export const getOtherUsersThunk = createAsyncThunk("user/getOtherUsers", async ({ skip = 0, limit = 10 } = {}, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.get("/user/get-other-users");
+    const response = await axiosInstance.get("/user/get-other-users", { params: { skip, limit } });
     return response.data;
   } catch (error) {
     console.error(error);

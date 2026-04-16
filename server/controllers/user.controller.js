@@ -95,10 +95,7 @@ export const getProfile = asyncHandler(async (req, res, next) => {
 
   const profile = await User.findById(userId).select("-password");
 
-  res.status(200).json({
-    success: true,
-    responseData: profile,
-  });
+  res.status(200).json({ success: true, responseData: profile });
 });
 
 // LOG-OUT
@@ -117,11 +114,25 @@ export const logout = asyncHandler(async (req, res, next) => {
 
 // GET OTHER USERS
 export const getOtherUsers = asyncHandler(async (req, res, next) => {
-  const otherUsers = await User.find({ _id: { $ne: req.user._id } }).select("-password -last_login_at");
+  const { skip = 0, limit = 10 } = req.query;
+  const skipNum = Number.parseInt(skip, 10);
+  const limitNum = Number.parseInt(limit, 10);
+
+  const otherUsers = await User.find({ _id: { $ne: req.user._id } })
+    .select("-password -last_login_at")
+    .skip(skipNum)
+    .limit(limitNum)
+    .sort({ createdAt: -1 });
+
+  const totalCount = await User.countDocuments({ _id: { $ne: req.user._id } });
 
   res.status(200).json({
     success: true,
-    responseData: otherUsers,
+    responseData: {
+      users: otherUsers,
+      totalCount,
+      hasMore: skipNum + limitNum < totalCount,
+    },
   });
 });
 

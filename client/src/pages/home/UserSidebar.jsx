@@ -5,13 +5,15 @@ import User from "./User";
 import { useDispatch, useSelector } from "react-redux";
 import { getOtherUsersThunk, logoutUserThunk } from "../../store/slice/user/user.thunk";
 import toast from "react-hot-toast";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const UserSidebar = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { otherUsers, userProfile, buttonLoading } = useSelector((state) => state.userReducer);
+  const { otherUsers, userProfile, buttonLoading, usersHasMore, usersLoading } = useSelector((state) => state.userReducer);
 
   // Logout function
   const handleLogout = () => {
@@ -22,14 +24,31 @@ const UserSidebar = () => {
     });
   };
 
-  // Fetch users
+  // Fetch initial users
   useEffect(() => {
-    dispatch(getOtherUsersThunk());
+    dispatch(getOtherUsersThunk({ skip: 0, limit: 10 }));
   }, [dispatch]);
+
+  // Load more users
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    dispatch(getOtherUsersThunk({ skip: nextPage * 10, limit: 10 }));
+    setCurrentPage(nextPage);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    // Reset pagination when search is cleared
+    if (value.trim() === "") {
+      setCurrentPage(0);
+    }
+  };
 
   // filter users
   const filteredUsers = useMemo(() => {
-    if (!otherUsers) return [];
+    if (!otherUsers || otherUsers.length === 0) return [];
 
     if (searchValue.trim() === "") return otherUsers;
 
@@ -49,16 +68,32 @@ const UserSidebar = () => {
       <div className="px-3 py-3">
         <div className="flex items-center gap-3 h-10 px-3 bg-zinc-800 border border-white/10 rounded-lg focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
           <IoSearch className="text-zinc-500 text-sm shrink-0" />
-          <input onChange={(e) => setSearchValue(e.target.value)} type="text" className="grow bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none" placeholder="Search users..." />
+          <input onChange={handleSearchChange} type="text" className="grow bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none" placeholder="Search users..." />
         </div>
       </div>
 
       {/* User list */}
-      <div className="flex-1 overflow-y-auto px-3 flex flex-col gap-1">
-        {filteredUsers.length === 0 && <p className="text-center text-zinc-500 text-sm py-8">No users found</p>}
-        {filteredUsers.map((userDetails) => (
-          <User key={userDetails?._id} userDetails={userDetails} />
-        ))}
+      <div className="flex-1 overflow-hidden px-3 flex flex-col">
+        {filteredUsers.length === 0 && !usersLoading && <p className="text-center text-zinc-500 text-sm py-8">No users found</p>}
+        <InfiniteScroll
+          dataLength={filteredUsers.length}
+          next={handleLoadMore}
+          hasMore={usersHasMore && searchValue.trim() === ""}
+          loader={
+            <div className="flex justify-center py-4">
+              <span className="spinner spinner-sm border-indigo-500 border-t-white"></span>
+            </div>
+          }
+          endMessage={filteredUsers.length > 0 && <p className="text-center text-zinc-500 text-sm py-4">No more users to load</p>}
+          style={{ overflow: "hidden" }}
+          height="auto"
+        >
+          <div className="flex flex-col gap-1 overflow-y-auto">
+            {filteredUsers.map((userDetails) => (
+              <User key={userDetails?._id} userDetails={userDetails} />
+            ))}
+          </div>
+        </InfiniteScroll>
       </div>
 
       {/* Current user & Logout */}

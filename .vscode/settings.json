@@ -1,0 +1,10 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.enablePromptUseWorkspaceTsdk": false,
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false
+}
