@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosInstance } from './../../../components/utilities/axiosInstance';
+import { axiosInstance } from "./../../../components/utilities/axiosInstance";
 
 // Send Message
 export const sendMessageThunk = createAsyncThunk("message/send", async ({ receiverId, message }, { rejectWithValue }) => {
@@ -14,9 +14,9 @@ export const sendMessageThunk = createAsyncThunk("message/send", async ({ receiv
 });
 
 // Get Messages
-export const getMessageThunk = createAsyncThunk("message/get", async ({ receiverId }, { rejectWithValue }) => {
+export const getMessageThunk = createAsyncThunk("message/get", async ({ receiverId, skip = 0, limit = 20 } = {}, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.get(`/message/get-messages/${receiverId}`);
+    const response = await axiosInstance.get(`/message/get-messages/${receiverId}`, { params: { skip, limit } });
     return response.data;
   } catch (error) {
     console.error(error);

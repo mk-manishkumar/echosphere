@@ -43,17 +43,39 @@ export const sendMessage = asyncHandler(async (req, res, next) => {
 export const getMessages = asyncHandler(async (req, res, next) => {
   const myId = req.user._id;
   const otherParticipantId = req.params.otherParticipantId;
+  const { skip = 0, limit = 20 } = req.query;
+  const skipNum = Number.parseInt(skip, 10);
+  const limitNum = Number.parseInt(limit, 10);
 
   if (!myId || !otherParticipantId) {
     return next(new errorHandler("All fields are required", 400));
   }
 
+  // Get total count first
+  const fullConversation = await Conversation.findOne({
+    participants: { $all: [myId, otherParticipantId] },
+  });
+  const totalMessagesCount = fullConversation?.messages?.length || 0;
+
+  // Get paginated messages (return in reverse chronological order for easier pagination)
   let conversation = await Conversation.findOne({
     participants: { $all: [myId, otherParticipantId] },
-  }).populate("messages");
+  }).populate({
+    path: "messages",
+    options: {
+      sort: { createdAt: -1 },
+      skip: skipNum,
+      limit: limitNum,
+    },
+  });
 
   res.status(200).json({
     success: true,
-    responseData: conversation,
+    responseData: {
+      conversation,
+      messages: conversation?.messages || [],
+      totalCount: totalMessagesCount,
+      hasMore: skipNum + limitNum < totalMessagesCount,
+    },
   });
 });

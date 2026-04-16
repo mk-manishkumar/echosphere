@@ -1,20 +1,34 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import User from "./User";
 import Message from "./Message";
 import { useDispatch, useSelector } from "react-redux";
 import { getMessageThunk } from "../../store/slice/message/message.thunk";
 import SendMessage from "./SendMessage";
 import { IoChatbubblesOutline } from "react-icons/io5";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { resetMessages } from "../../store/slice/message/message.slice";
 
 const MessageContainer = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(0);
 
   const { selectedUser } = useSelector((state) => state.userReducer);
-  const { messages } = useSelector((state) => state.messageReducer);
+  const { messages, messagesHasMore, messagesLoading } = useSelector((state) => state.messageReducer);
 
+  // Fetch initial messages
   useEffect(() => {
-    if (selectedUser?._id) dispatch(getMessageThunk({ receiverId: selectedUser._id }));
+    if (selectedUser?._id) {
+      dispatch(resetMessages());
+      dispatch(getMessageThunk({ receiverId: selectedUser._id, skip: 0, limit: 20 }));
+    }
   }, [selectedUser, dispatch]);
+
+  // Load more messages 
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    dispatch(getMessageThunk({ receiverId: selectedUser._id, skip: nextPage * 20, limit: 20 }));
+    setCurrentPage(nextPage);
+  };
 
   // No user selected — empty state
   if (selectedUser == null) {
@@ -38,16 +52,30 @@ const MessageContainer = () => {
         <User userDetails={selectedUser} />
       </div>
 
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
-        {messages?.length === 0 ? (
+      {/* Messages area with infinite scroll */}
+      <div className="flex-1 overflow-hidden px-4 py-4 flex flex-col" id="messages-container">
+        {messages?.length === 0 && !messagesLoading ? (
           <div className="flex justify-center items-center h-full">
             <p className="text-zinc-500 text-sm">No messages yet — say hello! 👋</p>
           </div>
         ) : (
-          messages?.map((messageDetails) => (
-            <Message key={messageDetails?._id} messageDetails={messageDetails} />
-          ))
+          <InfiniteScroll
+            dataLength={messages?.length || 0}
+            next={handleLoadMore}
+            hasMore={messagesHasMore}
+            loader={
+              <div className="flex justify-center py-4">
+                <span className="spinner spinner-sm border-indigo-500 border-t-white"></span>
+              </div>
+            }
+            endMessage={messages?.length > 0 && <p className="text-center text-zinc-500 text-sm py-4">Beginning of conversation</p>}
+            inverse={true}
+            scrollableTarget="messages-container"
+          >
+            {messages?.map((messageDetails) => (
+              <Message key={messageDetails?._id} messageDetails={messageDetails} />
+            ))}
+          </InfiniteScroll>
         )}
       </div>
 

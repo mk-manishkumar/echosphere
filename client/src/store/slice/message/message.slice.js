@@ -4,7 +4,10 @@ import { getMessageThunk, sendMessageThunk } from "./message.thunk";
 const initialState = {
   buttonLoading: false,
   screenLoading: false,
-  messages: null,
+  messages: [],
+  messagesHasMore: true,
+  messagesLoading: false,
+  totalMessagesCount: 0,
 };
 
 export const messageSlice = createSlice({
@@ -14,6 +17,11 @@ export const messageSlice = createSlice({
     setNewMessage: (state, action) => {
       const oldMessages = state.messages ?? [];
       state.messages = [...oldMessages, action.payload];
+    },
+    resetMessages: (state) => {
+      state.messages = [];
+      state.messagesHasMore = true;
+      state.totalMessagesCount = 0;
     },
   },
   extraReducers: (builder) => {
@@ -32,18 +40,22 @@ export const messageSlice = createSlice({
 
     // get messages
     builder.addCase(getMessageThunk.pending, (state) => {
-      state.buttonLoading = true;
+      state.messagesLoading = true;
     });
     builder.addCase(getMessageThunk.fulfilled, (state, action) => {
-      state.messages = action.payload?.responseData?.messages;
-      state.buttonLoading = false;
+      const { messages = [], totalCount = 0, hasMore = false } = action.payload?.responseData || {};
+      // For infinite scroll: prepend old messages (in reverse order to maintain display order)
+      state.messages = [...messages.reverse(), ...state.messages];
+      state.messagesHasMore = hasMore;
+      state.totalMessagesCount = totalCount;
+      state.messagesLoading = false;
     });
     builder.addCase(getMessageThunk.rejected, (state) => {
-      state.buttonLoading = false;
+      state.messagesLoading = false;
     });
   },
 });
 
-export const { setNewMessage } = messageSlice.actions;
+export const { setNewMessage, resetMessages } = messageSlice.actions;
 
 export default messageSlice.reducer;
