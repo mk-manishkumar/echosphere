@@ -4,9 +4,10 @@ import Message from "./Message";
 import { useDispatch, useSelector } from "react-redux";
 import { getMessageThunk } from "../../store/slice/message/message.thunk";
 import SendMessage from "./SendMessage";
-import { IoChatbubblesOutline } from "react-icons/io5";
+import { IoChatbubblesOutline, IoArrowBack } from "react-icons/io5";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { resetMessages } from "../../store/slice/message/message.slice";
+import { setSelectedUser } from "../../store/slice/user/user.slice";
 
 const MessageContainer = () => {
   const dispatch = useDispatch();
@@ -23,11 +24,16 @@ const MessageContainer = () => {
     }
   }, [selectedUser, dispatch]);
 
-  // Load more messages 
+  // Load more messages
   const handleLoadMore = () => {
     const nextPage = currentPage + 1;
     dispatch(getMessageThunk({ receiverId: selectedUser._id, skip: nextPage * 20, limit: 20 }));
     setCurrentPage(nextPage);
+  };
+
+  // Handle back button on mobile
+  const handleBackToUsers = () => {
+    dispatch(setSelectedUser(null));
   };
 
   // No user selected — empty state
@@ -48,8 +54,16 @@ const MessageContainer = () => {
   return (
     <div className="flex-1 h-screen flex flex-col bg-zinc-950">
       {/* Chat header */}
-      <div className="px-4 py-3 border-b border-white/10 bg-zinc-900/50 backdrop-blur-sm">
-        <User userDetails={selectedUser} />
+      <div className="px-4 py-3 border-b border-white/10 bg-zinc-900/50 backdrop-blur-sm flex items-center gap-3">
+        {/* Back button - Only on mobile */}
+        <button onClick={handleBackToUsers} className="md:hidden flex items-center justify-center p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all" title="Back to users">
+          <IoArrowBack className="text-xl" />
+        </button>
+
+        {/* User info */}
+        <div className="flex-1 min-w-0">
+          <User userDetails={selectedUser} />
+        </div>
       </div>
 
       {/* Messages area with infinite scroll */}

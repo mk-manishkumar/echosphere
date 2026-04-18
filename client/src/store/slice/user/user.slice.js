@@ -25,6 +25,11 @@ export const userSlice = createSlice({
     clearUsernameAvailability: (state) => {
       state.usernameAvailable = null;
     },
+    resetUsers: (state) => {
+      state.otherUsers = [];
+      state.usersHasMore = true;
+      state.totalUsersCount = 0;
+    },
   },
   extraReducers: (builder) => {
     // login user
@@ -146,6 +151,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setSelectedUser, clearUsernameAvailability } = userSlice.actions;
+export const { setSelectedUser, clearUsernameAvailability, resetUsers } = userSlice.actions;
 
 export default userSlice.reducer;

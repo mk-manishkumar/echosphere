@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 const Home = () => {
   const dispatch = useDispatch();
 
-  const { isAuthenticated, userProfile } = useSelector((state) => state.userReducer);
+  const { isAuthenticated, userProfile, selectedUser } = useSelector((state) => state.userReducer);
 
   // Connect/disconnect socket via middleware
   useEffect(() => {
@@ -23,8 +23,15 @@ const Home = () => {
 
   return (
     <div className="h-screen bg-zinc-950 flex">
-      <UserSidebar />
-      <MessageContainer />
+      {/* Sidebar */}
+      <div className={`${selectedUser ? "hidden md:flex" : "flex"} flex-col w-full md:w-80 md:shrink-0`}>
+        <UserSidebar />
+      </div>
+
+      {/* Message Container */}
+      <div className={`${selectedUser ? "flex" : "hidden md:flex"} flex-col flex-1`}>
+        <MessageContainer />
+      </div>
     </div>
   );
 };

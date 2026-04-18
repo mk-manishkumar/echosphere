@@ -4,6 +4,7 @@ import { IoSearch, IoLogOutOutline, IoCreateOutline } from "react-icons/io5";
 import User from "./User";
 import { useDispatch, useSelector } from "react-redux";
 import { getOtherUsersThunk, logoutUserThunk } from "../../store/slice/user/user.thunk";
+import { resetUsers } from "../../store/slice/user/user.slice";
 import toast from "react-hot-toast";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -26,6 +27,7 @@ const UserSidebar = () => {
 
   // Fetch initial users
   useEffect(() => {
+    dispatch(resetUsers());
     dispatch(getOtherUsersThunk({ skip: 0, limit: 10 }));
   }, [dispatch]);
 
@@ -58,7 +60,7 @@ const UserSidebar = () => {
   }, [searchValue, otherUsers]);
 
   return (
-    <div className="w-80 shrink-0 h-screen flex flex-col bg-zinc-900 border-r border-white/10">
+    <div className="w-full h-screen flex flex-col bg-zinc-900 border-r border-white/10">
       {/* Header */}
       <div className="px-4 py-5 border-b border-white/10">
         <h1 className="text-indigo-500 text-xl font-bold tracking-wide">ECHOSPHERE</h1>
