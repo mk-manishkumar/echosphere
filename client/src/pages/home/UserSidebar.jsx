@@ -63,7 +63,7 @@ const UserSidebar = () => {
     <div className="w-full h-screen flex flex-col bg-zinc-900 border-r border-white/10">
       {/* Header */}
       <div className="px-4 py-5 border-b border-white/10">
-        <h1 className="text-indigo-500 text-xl font-bold tracking-wide">ECHOSPHERE</h1>
+        <h1 className="text-indigo-500 text-xl font-bold tracking-wide text-center md:text-left">ECHOSPHERE</h1>
       </div>
 
       {/* Search */}
