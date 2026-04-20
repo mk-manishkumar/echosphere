@@ -1,13 +1,37 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Basic -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Title & SEO -->
     <title>Echosphere</title>
+    <meta name="description" content="Echosphere is a modern real-time chat application with secure messaging and seamless communication." />
+    <meta name="author" content="Echosphere Team" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Echosphere - Real-time Chat App" />
+    <meta property="og:description" content="Fast and secure real-time messaging platform." />
+    <meta property="og:type" content="website" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Preload main entry -->
+    <link rel="preload" href="/src/main.jsx" as="script" />
   </head>
+
   <body>
+    <!-- No JS fallback -->
+    <noscript>
+      <div>JavaScript is required to run this application.</div>
+    </noscript>
+
+    <!-- React Root -->
     <div id="root"></div>
+
+    <!-- Entry Script -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
