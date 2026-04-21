@@ -423,7 +423,7 @@ npm run lint
 
 ## 📄 License
 
-This project is licensed under the **ISC License** - see LICENSE file for details.
+This project is licensed under the **The Unlicense** - see LICENSE file for details.
 
 ---
 
